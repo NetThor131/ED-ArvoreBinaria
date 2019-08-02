@@ -7,6 +7,7 @@ typedef struct
     char nome[50];
     char cdg[50];
     char tmnh[50];
+    int nmr;
 } Arquivo;
 
 struct NO
@@ -44,7 +45,7 @@ void libera_ArvBin(ArvBin *raiz)
     free(raiz);
 }
 
-void PED(ArvBin *raiz)
+void PED(ArvBin *raiz, FILE **output)
 {
     if (raiz == NULL)
         return;
@@ -52,20 +53,20 @@ void PED(ArvBin *raiz)
     {
         if (strcmp("1", (*raiz)->info.tmnh) == 0)
         {
-            printf("%s %s %s byte\n", (*raiz)->info.nome, (*raiz)->info.cdg, (*raiz)->info.tmnh);
-            PED(&((*raiz)->esq));
-            PED(&((*raiz)->dir));
+            fprintf(*output, "%i %s %s %s byte\n", (*raiz)->info.nmr, (*raiz)->info.nome, (*raiz)->info.cdg, (*raiz)->info.tmnh);
+            PED(&((*raiz)->esq), output);
+            PED(&((*raiz)->dir), output);
         }
         else
         {
-            printf("%s %s %s bytes\n", (*raiz)->info.nome, (*raiz)->info.cdg, (*raiz)->info.tmnh);
-            PED(&((*raiz)->esq));
-            PED(&((*raiz)->dir));
+            fprintf(*output, "%i %s %s %s bytes\n", (*raiz)->info.nmr, (*raiz)->info.nome, (*raiz)->info.cdg, (*raiz)->info.tmnh);
+            PED(&((*raiz)->esq), output);
+            PED(&((*raiz)->dir), output);
         }
     }
 }
 
-void EPD(ArvBin *raiz)
+void EPD(ArvBin *raiz, FILE **output)
 {
     if (raiz == NULL)
         return;
@@ -73,20 +74,20 @@ void EPD(ArvBin *raiz)
     {
         if (strcmp("1", (*raiz)->info.tmnh) == 0)
         {
-            EPD(&((*raiz)->esq));
-            printf("%s %s %s byte\n", (*raiz)->info.nome, (*raiz)->info.cdg, (*raiz)->info.tmnh);
-            EPD(&((*raiz)->dir));
+            EPD(&((*raiz)->esq), output);
+            fprintf(*output, "%i %s %s %s byte\n", (*raiz)->info.nmr, (*raiz)->info.nome, (*raiz)->info.cdg, (*raiz)->info.tmnh);
+            EPD(&((*raiz)->dir), output);
         }
         else
         {
-            EPD(&((*raiz)->esq));
-            printf("%s %s %s bytes\n", (*raiz)->info.nome, (*raiz)->info.cdg, (*raiz)->info.tmnh);
-            EPD(&((*raiz)->dir));
+            EPD(&((*raiz)->esq), output);
+            fprintf(*output, "%i %s %s %s bytes\n", (*raiz)->info.nmr, (*raiz)->info.nome, (*raiz)->info.cdg, (*raiz)->info.tmnh);
+            EPD(&((*raiz)->dir), output);
         }
     }
 }
 
-void EDP(ArvBin *raiz)
+void EDP(ArvBin *raiz, FILE **output)
 {
     if (raiz == NULL)
         return;
@@ -94,15 +95,15 @@ void EDP(ArvBin *raiz)
     {
         if (strcmp("1", (*raiz)->info.tmnh) == 0)
         {
-            EDP(&((*raiz)->esq));
-            EDP(&((*raiz)->dir));
-            printf("%s %s %s byte\n", (*raiz)->info.nome, (*raiz)->info.cdg, (*raiz)->info.tmnh);
+            EDP(&((*raiz)->esq), output);
+            EDP(&((*raiz)->dir), output);
+            fprintf(*output, "%i %s %s %s byte\n", (*raiz)->info.nmr, (*raiz)->info.nome, (*raiz)->info.cdg, (*raiz)->info.tmnh);
         }
         else
         {
-            EDP(&((*raiz)->esq));
-            EDP(&((*raiz)->dir));
-            printf("%s %s %s bytes\n", (*raiz)->info.nome, (*raiz)->info.cdg, (*raiz)->info.tmnh);
+            EDP(&((*raiz)->esq), output);
+            EDP(&((*raiz)->dir), output);
+            fprintf(*output, "%i %s %s %s bytes\n", (*raiz)->info.nmr, (*raiz)->info.nome, (*raiz)->info.cdg, (*raiz)->info.tmnh);
         }
     }
 }
@@ -169,15 +170,16 @@ int main(int argc, char *argv[])
         strcpy(arquivo.nome, nome);
         strcpy(arquivo.cdg, cdg);
         strcpy(arquivo.tmnh, tmnh);
+        arquivo.nmr = i;
         insere_ArvBin(raiz, arquivo);
     }
 
-    printf("EPD:\n");
-    EPD(raiz);
-    printf("PED:\n");
-    PED(raiz);
-    printf("EDP:\n");
-    EDP(raiz);
+    fprintf(output, "EPD:\n");
+    EPD(raiz, &output);
+    fprintf(output, "PED:\n");
+    PED(raiz, &output);
+    fprintf(output, "EDP:\n");
+    EDP(raiz, &output);
 
     fclose(input);
     fclose(output);
